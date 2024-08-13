@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
+import 'package:sun_chase0/services/location.dart';
+import 'package:http/http.dart' as http;
 
 class LoadingScreen extends StatefulWidget {
   @override
@@ -8,38 +9,28 @@ class LoadingScreen extends StatefulWidget {
 
 class _LoadingScreenState extends State<LoadingScreen> {
 
-  final LocationSettings locationSettings = LocationSettings(
-    accuracy: LocationAccuracy.low,
-    distanceFilter: 100,
-  );
 
-  Future<void> getLocation()async{
-    try{
-      LocationPermission permission = await Geolocator.checkPermission();
+  @override
+  void initState() {
+    getLocation();
+    getData();
+    super.initState();
+  }
 
-      if(permission == LocationPermission.denied){
-        permission = await Geolocator.requestPermission();
-      }
+  void getLocation(){
+    Location location = Location();
+    location.getCurrentlocation();
+  }
 
-      Position position = await Geolocator.getCurrentPosition(locationSettings: locationSettings);
-      print(position);
-    }catch (e) {
-      // Handle errors that might occur
-      print('Error: getLocation');
-    }
+  void getData()async{
+    http.Response response = await http.get(
+    Uri.parse('https://openweathermap.org/api/geocoding-api#reverse_example')
+    );
+    print(response.statusCode);
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: ElevatedButton(
-          onPressed: () {
-            getLocation();
-          },
-          child: Text('Get Location'),
-        ),
-      ),
-    );
+    return Scaffold();
   }
 }
