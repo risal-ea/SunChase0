@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:sun_chase0/services/location.dart';
-import 'package:http/http.dart' as http;
+import 'package:sun_chase0/services/networking.dart';
+
+const apiKey = {YOUR API KEY};
 
 class LoadingScreen extends StatefulWidget {
   @override
@@ -8,29 +10,36 @@ class LoadingScreen extends StatefulWidget {
 }
 
 class _LoadingScreenState extends State<LoadingScreen> {
-
+  double latitude = 0;
+  double longitude = 0;
 
   @override
   void initState() {
-    getLocation();
-    getData();
     super.initState();
+    getLocationData();
   }
 
-  void getLocation(){
+  void getLocationData()  {
     Location location = Location();
     location.getCurrentlocation();
-  }
 
-  void getData()async{
-    http.Response response = await http.get(
-    Uri.parse('https://openweathermap.org/api/geocoding-api#reverse_example')
+    longitude = location.longitude;
+    latitude = location.latitude;
+
+    NetWorkHelper netWorkHelper = NetWorkHelper(
+        'http://api.openweathermap.org/data/2.5/weather?lat=$latitude&lon=$longitude&appid=$apiKey'
     );
-    print(response.statusCode);
+
+    var weatherData = netWorkHelper.getData();
+
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold();
+    return Scaffold(
+      body: Center(
+        child: Text('Loading...'),
+      ),
+    );
   }
 }
